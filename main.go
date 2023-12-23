@@ -7,8 +7,12 @@ import (
 
 func main (){
 	http.HandleFunc("/", func(w http.ResponseWriter, r * http.Request){
-		fmt.Fprintf(w, "Hello, you've request: %s\n", r.URL.Path)
+		fmt.Fprintf(w,"Welcome to my website" )
 	})
+
+	fs := http.FileSErver(http.Dir("static/"))
+
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.ListenAndServe(":80", nil)
 }
