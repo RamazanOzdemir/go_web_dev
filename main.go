@@ -18,15 +18,27 @@ type TodoPageData struct{
 	TodoList []Todo
 }
 
+type ContactDetail struct {
+	Email string
+	Subject string
+	Message string
+}
+
 func main (){
 	r := mux.NewRouter()
 
+	fs := http.FileServer(http.Dir("static/"))
 
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
+
+
+	// HOME
 	r.HandleFunc("/", func(w http.ResponseWriter, r * http.Request){
 		fmt.Fprintf(w,"Welcome to my website" )
 	})
 
 	
+	// TodoList PAGE
 	todoTemplate := template.Must(template.ParseFiles("templates/todo.html"))
 	r.HandleFunc("/todo",  func(w http.ResponseWriter, r * http.Request){
 		data := TodoPageData{
@@ -41,10 +53,30 @@ func main (){
 		todoTemplate.Execute(w, data)
 	})
 
-	fs := http.FileServer(http.Dir("static/"))
+	contactFormTemplate := template.Must(template.ParseFiles("templates/contact.html"))
+	// CONTACT PAGE
+	r.HandleFunc("/contact", func(w http.ResponseWriter, r * http.Request){
+		
+		if r.Method != http.MethodPost {
+            contactFormTemplate.Execute(w, nil)
+            return
+        }
+		details := ContactDetail{
+            Email:   r.FormValue("email"),
+            Subject: r.FormValue("subject"),
+            Message: r.FormValue("message"),
+        }
 
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
+        // do something with details
+        _ = details
 
+        contactFormTemplate.Execute(w, struct{ Success bool }{true})
+	})
+
+
+
+
+	// BOOKS PAGE with dynamic router parameters
 	r.HandleFunc("/books/{title}/page/{page}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
