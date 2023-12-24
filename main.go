@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"github.com/gorilla/mux"
 	"html/template"
+
+	"example.com/login"
 )
 
 type Todo struct {
@@ -40,7 +42,8 @@ func main (){
 	
 	// TodoList PAGE
 	todoTemplate := template.Must(template.ParseFiles("templates/todo.html"))
-	r.HandleFunc("/todo",  func(w http.ResponseWriter, r * http.Request){
+
+	todoHandler := func(w http.ResponseWriter, r * http.Request){
 		data := TodoPageData{
 			PageTitle: "My Todo List",
 			TodoList: []Todo{
@@ -51,7 +54,10 @@ func main (){
 		}
 
 		todoTemplate.Execute(w, data)
-	})
+	}
+
+	// apply login middleware to todo service
+	r.HandleFunc("/todo",  login.Chain(todoHandler, login.Logging()) )
 
 	contactFormTemplate := template.Must(template.ParseFiles("templates/contact.html"))
 	// CONTACT PAGE
