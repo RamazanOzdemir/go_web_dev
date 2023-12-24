@@ -2,9 +2,9 @@
 
 # GO first web app
 
-This repo is my first working on go language.
+This repo is my first work on go.
 
-There is a few branch to execute each step from [Go Web Examples](https://gowebexamples.com/) web page.
+You can find more details on the [Go Web Examples](https://gowebexamples.com/) page.
 
 ## Table of Contents
 
